@@ -67,7 +67,7 @@ const Game = (() => {
     gameListener = db.ref(`rooms/${roomId}/game`).on('value', (snap) => {
       const state = snap.val();
       if (!state) return;
-      if (state.updatedAt <= lastStateTs) return;
+      if (state.updatedAt === lastStateTs) return;
       lastStateTs = state.updatedAt;
 
       gameState = state;
@@ -110,6 +110,10 @@ const Game = (() => {
     // Round indicator
     const ri = document.getElementById('round-indicator');
     if (ri) ri.textContent = `Rodada ${state.round || 1} — Mão ${state.hand || 1}`;
+
+    if (state.status !== 'truco_called') {
+      Renderer.hideTrucoBanner();
+    }
 
     // Turn text
     if (state.status === 'playing') {

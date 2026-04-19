@@ -81,8 +81,8 @@ const TrucoEngine = (() => {
         avatar: p.avatar,
         avatarType: p.avatarType,
         avatarData: p.avatarData,
-        slot: i,
-        team: mode === 4 ? (i % 2) : i, // 0 or 1
+        slot: p.slot,
+        team: mode === 4 ? (p.slot % 2) : p.slot,
       })),
       scores: [0, 0],       // team scores (points towards winning)
       roundsWon: [0, 0],    // current hand rounds won per team
@@ -93,9 +93,9 @@ const TrucoEngine = (() => {
       hands: {},            // player id -> [cards]
       played: [],           // [{playerId, card, slot}] for current round
       allPlayed: [],        // history of all rounds in this hand
-      currentPlayer: 0,     // slot of current player
-      firstOfRound: 0,      // who plays first in round
-      firstOfHand: 0,       // who started the hand
+      currentPlayer: players[0].slot,
+      firstOfHand: players[0].slot,
+      firstOfRound: players[0].slot,
       status: 'playing',    // 'playing' | 'truco_called' | 'hand_over' | 'game_over'
       trucoStatus: null,    // null | {caller, level, responding}
       // level: 4(truco), 6(seis), 9(nove), 12(doze)
@@ -225,6 +225,7 @@ const TrucoEngine = (() => {
     } else {
       // Empate: whoever started this round starts next
       newState.currentPlayer = state.firstOfRound;
+      newState.firstOfRound = state.firstOfRound;
     }
 
     // Check hand winner
@@ -372,7 +373,7 @@ const TrucoEngine = (() => {
         trucoStatus: { ...state.trucoStatus, accepted: true, responderId: player.id },
         pendingPoints: state.trucoStatus.level,
         updatedAt: Date.now(),
-        currentPlayer: state.trucoStatus.callerSlot, // caller plays after truco accepted
+        currentPlayer: state.currentPlayer, // caller plays after truco accepted
       };
     }
 
