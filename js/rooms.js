@@ -283,7 +283,7 @@ const Rooms = (() => {
     const profile = Profile.get();
     if (currentRoomData.hostId !== profile.id) return;
 
-    const players = Object.values(currentRoomData.players || {}).sort((a,b) => a.slot - b.slot);
+    const players = Object.values(currentRoomData.players || {}).sort((a,b) => a.slot - b.slot).map(p => ({...p,avatarData: p.avatarData || null}));
     const gameState = TrucoEngine.createInitialState(players, currentRoomData.mode || 2);
 
     await db.ref(`rooms/${currentRoom}`).update({
