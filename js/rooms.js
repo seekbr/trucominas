@@ -73,7 +73,10 @@ const Rooms = (() => {
 
   async function createRoom(name) {
     const profile = Profile.getForPlayer();
-    const roomId = 'room_' + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+    const ref = db.ref('rooms').push(); // 🔥 chave única do Firebase
+    const roomId = ref.key;
+
     const room = {
       id: roomId,
       name,
@@ -88,7 +91,9 @@ const Rooms = (() => {
       chat: {},
       game: null,
     };
-    await db.ref(`rooms/${roomId}`).set(room);
+
+    await ref.set(room);
+
     mySlot = 0;
     enterRoom(roomId, room);
   }
