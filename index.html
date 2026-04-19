@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Truco Mineiro Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: LOBBY / PROFILE
+═══════════════════════════════════════════════ -->
+<div id="screen-lobby" class="screen active">
+  <div class="lobby-bg">
+    <div class="felt-texture"></div>
+    <div class="gold-border-frame"></div>
+  </div>
+
+  <div class="lobby-container">
+    <div class="lobby-header">
+      <h1 class="game-title">TRUCO<span>MINEIRO</span></h1>
+      <p class="game-subtitle">O rei das mesas de Minas Gerais</p>
+    </div>
+
+    <div class="lobby-content">
+      <!-- Profile Panel -->
+      <div class="panel profile-panel">
+        <h2 class="panel-title">Seu Perfil</h2>
+        <div class="avatar-picker">
+          <div class="avatar-preview" id="avatar-preview">
+            <img id="avatar-img" src="" alt="Avatar" style="display:none" />
+            <span class="avatar-placeholder" id="avatar-placeholder">👤</span>
+          </div>
+          <div class="avatar-actions">
+            <label class="btn btn-secondary" for="avatar-upload">
+              📷 Escolher Foto
+            </label>
+            <input type="file" id="avatar-upload" accept="image/*" style="display:none" />
+            <div class="avatar-emojis">
+              <span class="emoji-pick" data-emoji="🤠">🤠</span>
+              <span class="emoji-pick" data-emoji="😎">😎</span>
+              <span class="emoji-pick" data-emoji="🧙">🧙</span>
+              <span class="emoji-pick" data-emoji="🦁">🦁</span>
+              <span class="emoji-pick" data-emoji="🐂">🐂</span>
+              <span class="emoji-pick" data-emoji="🍺">🍺</span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Nome de Usuário</label>
+          <input type="text" id="username-input" placeholder="Seu nome no jogo..." maxlength="16" />
+        </div>
+        <button class="btn btn-primary" id="save-profile-btn">Salvar Perfil</button>
+        <div class="profile-saved" id="profile-saved">✓ Perfil salvo!</div>
+      </div>
+
+      <!-- Rooms Panel -->
+      <div class="panel rooms-panel">
+        <h2 class="panel-title">Salas</h2>
+        <div class="rooms-actions">
+          <button class="btn btn-gold" id="create-room-btn">+ Criar Sala</button>
+          <button class="btn btn-secondary" id="refresh-rooms-btn">↻ Atualizar</button>
+        </div>
+        <div class="rooms-list" id="rooms-list">
+          <div class="rooms-empty">
+            <div class="empty-icon">🃏</div>
+            <p>Nenhuma sala encontrada</p>
+            <span>Crie uma sala ou atualize a lista</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: WAITING ROOM
+═══════════════════════════════════════════════ -->
+<div id="screen-waiting" class="screen">
+  <div class="waiting-bg"></div>
+  <div class="waiting-container">
+    <div class="waiting-header">
+      <button class="btn btn-back" id="leave-room-btn">← Sair</button>
+      <h2 class="waiting-title">Sala: <span id="room-name-display"></span></h2>
+      <div class="room-code">
+        Código: <strong id="room-code-display"></strong>
+        <button class="btn-copy" id="copy-code-btn" title="Copiar código">📋</button>
+      </div>
+    </div>
+
+    <div class="waiting-content">
+      <div class="players-grid" id="players-grid">
+        <!-- Dynamically filled -->
+      </div>
+
+      <div class="waiting-info">
+        <div class="waiting-status" id="waiting-status">
+          Aguardando jogadores...
+        </div>
+        <div class="mode-selector" id="mode-selector">
+          <span>Modo:</span>
+          <button class="mode-btn active" data-mode="2">2 Jogadores</button>
+          <button class="mode-btn" data-mode="4">4 Jogadores (Duplas)</button>
+        </div>
+        <button class="btn btn-gold btn-large" id="start-game-btn" disabled>
+          Iniciar Jogo
+        </button>
+        <div class="chat-box">
+          <div class="chat-messages" id="chat-messages"></div>
+          <div class="chat-input-row">
+            <input type="text" id="chat-input" placeholder="Mensagem..." maxlength="60" />
+            <button class="btn btn-secondary" id="chat-send-btn">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: GAME TABLE (3D Simulation)
+═══════════════════════════════════════════════ -->
+<div id="screen-game" class="screen">
+  <!-- 3D Table Scene -->
+  <div class="table-scene" id="table-scene">
+    <div class="table-perspective">
+
+      <!-- FELT TABLE -->
+      <div class="table-felt">
+        <!-- Cards played on table -->
+        <div class="played-area" id="played-area">
+          <div class="round-indicator" id="round-indicator">Rodada 1</div>
+        </div>
+        <!-- Deck decoration -->
+        <div class="deck-deco">
+          <div class="deck-card d3"></div>
+          <div class="deck-card d2"></div>
+          <div class="deck-card d1"></div>
+        </div>
+        <!-- Vira card -->
+        <div class="vira-slot">
+          <div class="vira-label">Vira</div>
+          <div class="card-3d" id="vira-card">
+            <div class="card-face card-front" id="vira-front"></div>
+            <div class="card-face card-back"></div>
+          </div>
+        </div>
+        <!-- Score display -->
+        <div class="score-board" id="score-board">
+          <div class="score-team" id="score-team1">
+            <span class="team-label" id="team1-label">Time 1</span>
+            <span class="team-score" id="team1-score">0</span>
+          </div>
+          <div class="score-divider">×</div>
+          <div class="score-team" id="score-team2">
+            <span class="team-score" id="team2-score">0</span>
+            <span class="team-label" id="team2-label">Time 2</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLAYER ZONES (4 positions) -->
+      <!-- Bottom: Me -->
+      <div class="player-zone zone-bottom" id="zone-bottom">
+        <div class="player-info-3d" id="pinfo-bottom">
+          <div class="player-avatar-3d"></div>
+          <div class="player-name-3d">Você</div>
+          <div class="player-cards-count"><span>3</span> cartas</div>
+        </div>
+        <div class="hand-area" id="hand-bottom">
+          <!-- Player hand rendered here -->
+        </div>
+      </div>
+
+      <!-- Top: Opponent across -->
+      <div class="player-zone zone-top" id="zone-top">
+        <div class="hand-area hand-top" id="hand-top"></div>
+        <div class="player-info-3d" id="pinfo-top">
+          <div class="player-avatar-3d"></div>
+          <div class="player-name-3d">Adversário</div>
+          <div class="player-cards-count"><span>3</span> cartas</div>
+        </div>
+      </div>
+
+      <!-- Left: Partner or Opponent -->
+      <div class="player-zone zone-left" id="zone-left" style="display:none">
+        <div class="hand-area hand-side" id="hand-left"></div>
+        <div class="player-info-3d" id="pinfo-left">
+          <div class="player-avatar-3d"></div>
+          <div class="player-name-3d">-</div>
+        </div>
+      </div>
+
+      <!-- Right: Partner or Opponent -->
+      <div class="player-zone zone-right" id="zone-right" style="display:none">
+        <div class="hand-area hand-side" id="hand-right"></div>
+        <div class="player-info-3d" id="pinfo-right">
+          <div class="player-avatar-3d"></div>
+          <div class="player-name-3d">-</div>
+        </div>
+      </div>
+
+    </div><!-- .table-perspective -->
+  </div><!-- .table-scene -->
+
+  <!-- HUD Overlay -->
+  <div class="game-hud">
+    <!-- Turn indicator -->
+    <div class="turn-indicator" id="turn-indicator">
+      <div class="turn-pulse"></div>
+      <span id="turn-text">Aguardando...</span>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="action-panel" id="action-panel">
+      <button class="btn-action btn-truco" id="btn-truco">
+        <span class="btn-icon">⚔️</span> Truco!
+      </button>
+      <button class="btn-action btn-fold" id="btn-fold">
+        <span class="btn-icon">🏳️</span> Correr
+      </button>
+      <button class="btn-action btn-accept" id="btn-accept" style="display:none">
+        <span class="btn-icon">✅</span> Aceitar
+      </button>
+      <button class="btn-action btn-raise" id="btn-raise" style="display:none">
+        <span class="btn-icon">🔥</span> Aumentar
+      </button>
+      <button class="btn-action btn-deny" id="btn-deny" style="display:none">
+        <span class="btn-icon">❌</span> Recusar
+      </button>
+    </div>
+
+    <!-- Game log -->
+    <div class="game-log" id="game-log">
+      <div class="log-title">📋 Log</div>
+      <div class="log-content" id="log-content"></div>
+    </div>
+
+    <!-- Truco call banner -->
+    <div class="truco-banner" id="truco-banner" style="display:none">
+      <div class="truco-banner-content">
+        <div class="truco-caller" id="truco-caller"></div>
+        <div class="truco-title">TRUCO!</div>
+        <div class="truco-value" id="truco-value-display">Vale 4 pontos</div>
+      </div>
+    </div>
+
+    <!-- Round result banner -->
+    <div class="round-banner" id="round-banner" style="display:none">
+      <div class="round-result-text" id="round-result-text"></div>
+    </div>
+
+    <!-- Back to lobby -->
+    <button class="btn-exit-game" id="exit-game-btn">✕ Sair</button>
+  </div>
+
+</div>
+
+<!-- TOAST notifications -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<!-- Game scripts -->
+<script src="js/firebase-config.js"></script>
+<script src="js/profile.js"></script>
+<script src="js/rooms.js"></script>
+<script src="js/truco-engine.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
